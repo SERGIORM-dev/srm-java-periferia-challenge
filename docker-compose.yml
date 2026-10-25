@@ -1,0 +1,35 @@
+name: periferia-pricing
+
+services:
+  mysql:
+    image: mysql:8.4
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_as_cs
+      - --default-time-zone=+00:00
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-pricing}
+      MYSQL_USER: ${MYSQL_USER:-pricing_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pricing_local_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-pricing_root_local_password}
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          MYSQL_PWD="$${MYSQL_PASSWORD}" mysql
+          --protocol=TCP --host=127.0.0.1
+          --user="$${MYSQL_USER}" --database="$${MYSQL_DATABASE}"
+          --batch --skip-column-names --execute='SELECT 1' >/dev/null
+      start_period: 30s
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
