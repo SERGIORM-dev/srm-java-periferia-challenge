@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: pricing-middleware
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:pricing}?sslMode=DISABLED&allowPublicKeyRetrieval=true&connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
+    username: ${MYSQL_USER:pricing_app}
+    password: ${MYSQL_PASSWORD:pricing_local_password}
+    hikari:
+      connection-timeout: 3000
+  sql:
+    init:
+      mode: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
