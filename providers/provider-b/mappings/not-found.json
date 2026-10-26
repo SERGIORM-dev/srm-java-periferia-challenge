@@ -1,0 +1,10 @@
+{
+  "name": "provider-b-not-found",
+  "priority": 10,
+  "request": {"method": "GET", "urlPath": "/api/prices"},
+  "response": {
+    "status": 404,
+    "headers": {"Content-Type": "application/json"},
+    "jsonBody": {"error": "SKU_NOT_FOUND"}
+  }
+}

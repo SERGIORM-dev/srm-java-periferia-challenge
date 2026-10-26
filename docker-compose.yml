@@ -31,6 +31,36 @@ services:
       retries: 20
     restart: unless-stopped
 
+  provider-a:
+    image: wiremock/wiremock:3.13.2
+    command: ["--global-response-templating"]
+    ports:
+      - "127.0.0.1:${PROVIDER_A_PORT:-8081}:8080"
+    volumes:
+      - ./providers/provider-a:/home/wiremock:ro
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://localhost:8080/__admin/health"]
+      start_period: 10s
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  provider-b:
+    image: wiremock/wiremock:3.13.2
+    command: ["--global-response-templating"]
+    ports:
+      - "127.0.0.1:${PROVIDER_B_PORT:-8082}:8080"
+    volumes:
+      - ./providers/provider-b:/home/wiremock:ro
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://localhost:8080/__admin/health"]
+      start_period: 10s
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
   backend:
     build:
       context: ./backend

@@ -1,0 +1,19 @@
+{
+  "name": "provider-b-prices",
+  "priority": 5,
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/prices",
+    "queryParameters": {
+      "sku": {
+        "matches": "GAS-CORRIENTE|GAS-EXTRA|ADIT-OCTANAJE|ADIT-LIMPIADOR"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {"Content-Type": "application/json"},
+    "bodyFileName": "price.json.hbs",
+    "delayDistribution": {"type": "uniform", "lower": 400, "upper": 900}
+  }
+}

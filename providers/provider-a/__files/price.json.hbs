@@ -1,0 +1,7 @@
+{{#assign 'offset'}}{{#if (eq request.headers.X-Demo-Freshness.0 'fresh')}}0 minutes{{else if (eq request.headers.X-Demo-Freshness.0 'stale')}}-20 minutes{{else}}{{pickRandom '0 minutes' '0 minutes' '0 minutes' '0 minutes' '0 minutes' '0 minutes' '0 minutes' '-20 minutes' '-20 minutes' '-20 minutes'}}{{/if}}{{/assign}}
+{
+  "sku": "{{request.query.sku.0}}",
+  "basePrice": {{#if (eq request.query.sku.0 'GAS-CORRIENTE')}}100.00{{else if (eq request.query.sku.0 'GAS-EXTRA')}}120.00{{else if (eq request.query.sku.0 'ADIT-OCTANAJE')}}25.00{{else}}15.00{{/if}},
+  "currency": "USD",
+  "lastUpdated": "{{now offset=offset format="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" timezone='UTC'}}"
+}

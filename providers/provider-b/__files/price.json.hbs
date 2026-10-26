@@ -1,0 +1,6 @@
+{
+  "itemCode": "{{request.query.sku.0}}",
+  "cost": {{#if (eq request.query.sku.0 'GAS-CORRIENTE')}}102.00{{else if (eq request.query.sku.0 'GAS-EXTRA')}}123.00{{else if (eq request.query.sku.0 'ADIT-OCTANAJE')}}26.00{{else}}16.00{{/if}},
+  "curr": "USD",
+  "timestamp": {{now format='unix'}}
+}
