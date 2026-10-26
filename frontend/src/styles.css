@@ -1,0 +1,78 @@
+:root {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #1d2c27;
+  background: #f4f6f5;
+  font-synthesis: none;
+  line-height: 1.5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1240px; margin: 0 auto; padding: 28px 24px 48px; }
+h1 { margin: 0; font-size: clamp(1.5rem, 3vw, 2rem); }
+h2 { margin: 0 0 18px; font-size: 1.15rem; }
+h3 { margin: 0; font-size: 1.1rem; }
+p { margin: 8px 0 16px; }
+.page-heading { margin-bottom: 24px; }
+.page-heading p, .muted, small { color: #52625a; }
+.panel { min-width: 0; background: white; border: 1px solid #dce3df; border-radius: 8px; padding: 22px; }
+.panel h2, .price-result h3, .notice { overflow-wrap: anywhere; }
+.workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; align-items: start; }
+.section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.section-heading h2 { margin: 0; }
+button, input, select { font: inherit; }
+button { border: 1px solid #b9c6bf; border-radius: 5px; padding: 8px 12px; background: white; color: #263c30; cursor: pointer; }
+button:hover:not(:disabled) { background: #eef4f0; }
+button.primary { background: #176846; border-color: #176846; color: white; }
+button.primary:hover:not(:disabled) { background: #105035; }
+button.danger { color: #a02626; }
+button:disabled { opacity: .6; cursor: wait; }
+:focus-visible { outline: 3px solid #2d79c4; outline-offset: 2px; }
+.actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.row-actions { flex-wrap: nowrap; }
+.row-actions button { padding: 6px 9px; font-size: .86rem; white-space: nowrap; }
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: 12px 10px; border-bottom: 1px solid #e5eae7; text-align: left; vertical-align: middle; }
+thead { background: #f5f8f6; }
+tbody th { font-weight: 600; }
+.sku { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .88rem; }
+.empty { text-align: center; color: #52625a; padding: 24px; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+label { display: block; font-weight: 600; margin: 14px 0 6px; font-size: .9rem; }
+fieldset > label:first-child { margin-top: 0; }
+input:not([type=checkbox]), select { width: 100%; border: 1px solid #aebdb4; border-radius: 5px; padding: 9px 10px; background: white; color: #1d2c27; }
+input:disabled { background: #f1f4f2; }
+input[aria-invalid=true] { border-color: #b03535; }
+small { display: block; margin-top: 4px; font-size: .8rem; }
+.checkbox { display: flex; align-items: center; gap: 8px; margin: 18px 0; font-weight: 500; }
+input[type=checkbox] { accent-color: #176846; width: 17px; height: 17px; }
+.notice { padding: 11px 14px; border: 1px solid; border-radius: 5px; }
+.success { color: #155838; background: #eff8f1; border-color: #b9d8c3; }
+.error, .field-error { color: #982a28; }
+.notice.error { background: #fff1ef; border-color: #efc3bd; }
+.warning { color: #78510d; background: #fff8e7; border-color: #ead6a6; }
+.badge { display: inline-block; border-radius: 4px; padding: 3px 8px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
+.active, .source-cache { background: #e7f4ec; color: #1b603c; }
+.inactive { background: #ecefed; color: #4c5b53; }
+.source-provider_a { background: #eaf1fb; color: #27558c; }
+.source-provider_b { background: #f0ebfa; color: #60408b; }
+.stale, .source-fallback_cache { background: #fff0ce; color: #7b530c; }
+.price-query label { margin-top: 0; }
+.price-query .actions { flex-wrap: nowrap; }
+.price-query input { min-width: 0; flex: 1; }
+.price-result { margin-top: 24px; border-top: 1px solid #e5eae7; padding-top: 20px; }
+.price-result p.sku { margin: 4px 0 12px; }
+dl { margin: 16px 0 0; }
+dl > div { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; }
+dt { color: #52625a; }
+dd { margin: 0; font-weight: 600; text-align: right; }
+.final-price { border-top: 1px solid #dce3df; border-bottom: 1px solid #dce3df; font-size: 1.1rem; }
+.final-price dd { color: #176846; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 760px) {
+  main { padding: 18px 12px 32px; }
+  .workspace { grid-template-columns: 1fr; gap: 16px; }
+  .panel { padding: 16px; }
+  table { min-width: 850px; }
+  .section-heading { align-items: flex-start; }
+}
