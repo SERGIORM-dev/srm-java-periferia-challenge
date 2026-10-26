@@ -2,23 +2,25 @@ package com.periferia.pricing.productrule.repository;
 
 import com.periferia.pricing.productrule.model.PreferredProvider;
 import com.periferia.pricing.productrule.model.ProductRule;
+import com.periferia.pricing.support.MySqlTestContainers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -26,20 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProductRuleRepositoryIT {
 
     @Container
-    static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.4")
-            .withDatabaseName("pricing")
-            .withUsername("pricing_test")
-            .withPassword("pricing_test_password")
-            .withCommand("--default-time-zone=+00:00", "--character-set-server=utf8mb4",
-                    "--collation-server=utf8mb4_0900_as_cs")
-            .withUrlParam("connectionTimeZone", "UTC")
-            .withUrlParam("forceConnectionTimeZoneToSession", "true")
-            .withCopyFileToContainer(
-                    MountableFile.forClasspathResource("database-init/01_create_product_rules.sql"),
-                    "/docker-entrypoint-initdb.d/01_create_product_rules.sql")
-            .withCopyFileToContainer(
-                    MountableFile.forClasspathResource("database-init/02_insert_demo_products.sql"),
-                    "/docker-entrypoint-initdb.d/02_insert_demo_products.sql");
+    static final MySQLContainer<?> MYSQL = MySqlTestContainers.pricingDatabase();
 
     @DynamicPropertySource
     static void configureDatabase(DynamicPropertyRegistry registry) {
@@ -137,6 +126,29 @@ class ProductRuleRepositoryIT {
         assertThat(repository.findBySku("GAS-EXTRA").orElseThrow().getName())
                 .isEqualTo("Gasolina extra nueva");
         assertThat(repository.count()).isEqualTo(4);
+    }
+
+    @Test
+    void exposesTheSkuConstraintWhenAnInsertConflicts() {
+        try {
+            DataIntegrityViolationException failure = assertThrows(
+                    DataIntegrityViolationException.class,
+                    () -> repository.saveAndFlush(new ProductRule(
+                            "GAS-EXTRA", "Gasolina duplicada", new BigDecimal("10.00"),
+                            PreferredProvider.AUTO, true)));
+
+            assertThat(failure).isNotNull();
+            Throwable cause = failure;
+            while (cause != null
+                    && !(cause instanceof org.hibernate.exception.ConstraintViolationException)) {
+                cause = cause.getCause();
+            }
+            assertThat(cause).isInstanceOf(org.hibernate.exception.ConstraintViolationException.class);
+            assertThat(((org.hibernate.exception.ConstraintViolationException) cause)
+                    .getConstraintName()).endsWith("uk_product_rules_sku");
+        } finally {
+            entityManager.clear();
+        }
     }
 
     private void setDatabaseClock(long epochSeconds) {
