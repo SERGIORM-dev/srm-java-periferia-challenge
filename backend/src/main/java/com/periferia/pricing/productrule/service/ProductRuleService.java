@@ -3,12 +3,14 @@ package com.periferia.pricing.productrule.service;
 import com.periferia.pricing.productrule.exception.DuplicateSkuException;
 import com.periferia.pricing.productrule.exception.ProductRuleNotFoundException;
 import com.periferia.pricing.productrule.exception.ProductRuleValidationException;
+import com.periferia.pricing.productrule.event.ProductRuleChanged;
 import com.periferia.pricing.productrule.model.PreferredProvider;
 import com.periferia.pricing.productrule.model.ProductRule;
 import com.periferia.pricing.productrule.repository.ProductRuleRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +29,11 @@ public class ProductRuleService {
     private static final Pattern EDGE_WHITESPACE = Pattern.compile("^\\s+|\\s+$", Pattern.UNICODE_CHARACTER_CLASS);
 
     private final ProductRuleRepository repository;
+    private final ApplicationEventPublisher events;
 
-    public ProductRuleService(ProductRuleRepository repository) {
+    public ProductRuleService(ProductRuleRepository repository, ApplicationEventPublisher events) {
         this.repository = repository;
+        this.events = events;
     }
 
     public List<ProductRule> findAll() {
@@ -55,7 +59,9 @@ public class ProductRuleService {
         ProductRule rule = new ProductRule(normalizedSku, normalizedName,
                 validatedMargin, preferredProvider, active);
         try {
-            return repository.saveAndFlush(rule);
+            ProductRule created = repository.saveAndFlush(rule);
+            events.publishEvent(new ProductRuleChanged(normalizedSku));
+            return created;
         } catch (DataIntegrityViolationException exception) {
             if (isDuplicateSku(exception)) {
                 throw new DuplicateSkuException(normalizedSku, exception);
@@ -74,12 +80,16 @@ public class ProductRuleService {
 
         ProductRule rule = requireRule(normalizedSku);
         rule.updateDetails(normalizedName, validatedMargin, preferredProvider, active);
-        return repository.saveAndFlush(rule);
+        ProductRule updated = repository.saveAndFlush(rule);
+        events.publishEvent(new ProductRuleChanged(normalizedSku));
+        return updated;
     }
 
     @Transactional
     public void delete(String sku) {
-        repository.delete(requireRule(normalizeSku(sku)));
+        String normalizedSku = normalizeSku(sku);
+        repository.delete(requireRule(normalizedSku));
+        events.publishEvent(new ProductRuleChanged(normalizedSku));
     }
 
     private ProductRule requireRule(String sku) {

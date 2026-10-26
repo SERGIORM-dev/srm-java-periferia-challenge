@@ -1,6 +1,8 @@
 package com.periferia.pricing.price.service;
 
 import com.periferia.pricing.price.dto.PriceResponse;
+import com.periferia.pricing.price.cache.PriceCache;
+import com.periferia.pricing.price.cache.PriceCacheProperties;
 import com.periferia.pricing.price.exception.InactiveProductException;
 import com.periferia.pricing.price.exception.PriceUnavailableException;
 import com.periferia.pricing.price.model.PriceSource;
@@ -25,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 
@@ -47,7 +50,10 @@ class PriceServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new PriceService(rules, a, b, Clock.fixed(NOW, ZoneOffset.UTC));
+        PriceFreshness freshness = new PriceFreshness(Clock.fixed(NOW, ZoneOffset.UTC));
+        PriceCache cache = new PriceCache(new PriceCacheProperties(
+                Duration.ofSeconds(60), Duration.ofMinutes(15), 10000), freshness, () -> 0L);
+        service = new PriceService(rules, a, b, freshness, cache);
     }
 
     @ParameterizedTest

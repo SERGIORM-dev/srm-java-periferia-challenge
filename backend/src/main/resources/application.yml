@@ -20,6 +20,10 @@ spring:
       mode: never
 
 pricing:
+  cache:
+    fresh-ttl: ${PRICE_CACHE_FRESH_TTL:60s}
+    fallback-ttl: ${PRICE_CACHE_FALLBACK_TTL:15m}
+    maximum-size: ${PRICE_CACHE_MAXIMUM_SIZE:10000}
   providers:
     a:
       base-url: ${PROVIDER_A_BASE_URL:http://localhost:${PROVIDER_A_PORT:8081}}

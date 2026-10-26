@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -37,11 +38,14 @@ class ProductRuleServiceTest {
     @Mock
     private ProductRuleRepository repository;
 
+    @Mock
+    private ApplicationEventPublisher events;
+
     private ProductRuleService service;
 
     @BeforeEach
     void setUp() {
-        service = new ProductRuleService(repository);
+        service = new ProductRuleService(repository, events);
     }
 
     @ParameterizedTest
