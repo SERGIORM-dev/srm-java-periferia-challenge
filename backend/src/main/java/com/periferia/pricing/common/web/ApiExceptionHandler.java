@@ -1,5 +1,7 @@
 package com.periferia.pricing.common.web;
 
+import com.periferia.pricing.price.exception.InactiveProductException;
+import com.periferia.pricing.price.exception.PriceUnavailableException;
 import com.periferia.pricing.productrule.exception.DuplicateSkuException;
 import com.periferia.pricing.productrule.exception.ProductRuleNotFoundException;
 import com.periferia.pricing.productrule.exception.ProductRuleValidationException;
@@ -57,6 +59,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 "Revisa los campos obligatorios de la solicitud.");
         problem.setProperty("errors", errors);
         return handleExceptionInternal(exception, problem, headers, status, request);
+    }
+
+    @ExceptionHandler(InactiveProductException.class)
+    public ResponseEntity<ProblemDetail> handleInactive(InactiveProductException exception) {
+        return response(problem(HttpStatus.UNPROCESSABLE_ENTITY, "Producto inactivo", exception.getMessage()));
+    }
+
+    @ExceptionHandler(PriceUnavailableException.class)
+    public ResponseEntity<ProblemDetail> handlePriceUnavailable(PriceUnavailableException exception) {
+        LOGGER.warn("No hay un precio utilizable de los proveedores.", exception);
+        return response(problem(HttpStatus.SERVICE_UNAVAILABLE, "Precio no disponible",
+                "No fue posible obtener un precio de los proveedores. Intenta nuevamente más tarde."));
     }
 
     @Override
