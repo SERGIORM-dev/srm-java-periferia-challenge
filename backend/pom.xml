@@ -79,6 +79,14 @@
                         <directory>${project.basedir}/../database/init</directory>
                         <targetPath>database-init</targetPath>
                     </testResource>
+                    <testResource>
+                        <directory>${project.basedir}/../providers/provider-a</directory>
+                        <targetPath>providers/provider-a</targetPath>
+                    </testResource>
+                    <testResource>
+                        <directory>${project.basedir}/../providers/provider-b</directory>
+                        <targetPath>providers/provider-b</targetPath>
+                    </testResource>
                 </testResources>
                 <plugins>
                     <plugin>

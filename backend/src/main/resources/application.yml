@@ -19,6 +19,17 @@ spring:
     init:
       mode: never
 
+pricing:
+  providers:
+    a:
+      base-url: ${PROVIDER_A_BASE_URL:http://localhost:${PROVIDER_A_PORT:8081}}
+      connect-timeout-ms: ${PROVIDER_A_CONNECT_TIMEOUT_MS:200}
+      read-timeout-ms: ${PROVIDER_A_READ_TIMEOUT_MS:250}
+    b:
+      base-url: ${PROVIDER_B_BASE_URL:http://localhost:${PROVIDER_B_PORT:8082}}
+      connect-timeout-ms: ${PROVIDER_B_CONNECT_TIMEOUT_MS:200}
+      read-timeout-ms: ${PROVIDER_B_READ_TIMEOUT_MS:1000}
+
 management:
   endpoints:
     web:
